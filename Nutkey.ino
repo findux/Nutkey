@@ -12,6 +12,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 #include <Keypad.h>
 
+#include "GuiManager.h"
+
 const byte ROWS = 4;  //four rows
 const byte COLS = 3;  //four columns
 //define the cymbols on the buttons of the keypads
@@ -26,6 +28,8 @@ byte colPins[COLS] = { 10, 16, 14 };      //connect to the column pinouts of the
 
 //initialize an instance of class NewKeypad
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
+
+GuiManager gui(&display);
 
 void setup() {
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -85,19 +89,13 @@ void loop() {
     Keyboard.releaseAll();
   }
   if (customKey =='0') {
-    Keyboard.press(0x24|0xc0);
-    delay(100);
-    Keyboard.releaseAll();
+    gui.previousPage();
   }
   if (customKey =='2') {
-    Keyboard.press(0x32|0xc0);
-    delay(100);
-    Keyboard.releaseAll();
+    gui.nextPage();
   }
   if (customKey =='1') {
-    Keyboard.press(0x25|0x80);
-    delay(100);
-    Keyboard.releaseAll();
+    gui.doit();
   }
   if (customKey =='4') {
     Keyboard.press(0x26|0x80);
