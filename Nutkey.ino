@@ -29,7 +29,7 @@ byte colPins[COLS] = { 10, 16, 14 };      //connect to the column pinouts of the
 //initialize an instance of class NewKeypad
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
-GuiManager gui(&display);
+GuiManager* gui;
 
 void setup() {
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -57,6 +57,8 @@ void setup() {
   display.println(F("Basladi..."));
   display.display();  // Show initial text
   delay(100);
+
+  gui = new GuiManager(&display);
 }
 
 void loop() {
@@ -89,13 +91,13 @@ void loop() {
     Keyboard.releaseAll();
   }
   if (customKey =='0') {
-    gui.previousPage();
+    gui->previousPage();
   }
   if (customKey =='2') {
-    gui.nextPage();
+    gui->nextPage();
   }
   if (customKey =='1') {
-    gui.doit();
+    gui->doit();
   }
   if (customKey =='4') {
     Keyboard.press(0x26|0x80);
