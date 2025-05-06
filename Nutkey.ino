@@ -59,6 +59,7 @@ void setup() {
   delay(100);
 
   gui = new GuiManager(&display);
+  customKeypad.addEventListener(keypadEvent); // Add an event listener for this keypad
 }
 
 void loop() {
@@ -114,4 +115,29 @@ void loop() {
     delay(100);
     Keyboard.releaseAll();
   }
+}
+
+// Taking care of some special events.
+void keypadEvent(KeypadEvent key){
+    switch (customKeypad.getState()){
+    case PRESSED:
+        if (key == '#') {
+            digitalWrite(ledPin,!digitalRead(ledPin));
+            ledPin_state = digitalRead(ledPin);        // Remember LED state, lit or unlit.
+        }
+        break;
+
+    case RELEASED:
+        if (key == '*') {
+            digitalWrite(ledPin,ledPin_state);    // Restore LED state from before it started blinking.
+            blink = false;
+        }
+        break;
+
+    case HOLD:
+        if (key == '*') {
+            blink = true;    // Blink the LED when holding the * key.
+        }
+        break;
+    }
 }
