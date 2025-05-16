@@ -28,6 +28,7 @@ byte colPins[COLS] = { 10, 16, 14 };      //connect to the column pinouts of the
 
 //initialize an instance of class NewKeypad
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
+char holdedChar;
 
 GuiManager* gui;
 
@@ -59,85 +60,117 @@ void setup() {
   delay(100);
 
   gui = new GuiManager(&display);
-  customKeypad.addEventListener(keypadEvent); // Add an event listener for this keypad
+  customKeypad.addEventListener(keypadEvent);  // Add an event listener for this keypad
 }
 
 void loop() {
   char customKey = customKeypad.getKey();
-  if (customKey){
+  if (customKey) {
     display.clearDisplay();
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
     display.println(customKey);
-    display.display();      // Show initial text
+    display.display();  // Show initial text
   }
-  if (customKey =='9') {
-    Keyboard.press(KEY_LEFT_ARROW);
-    delay(100);
-    Keyboard.releaseAll();
-  }
-  if (customKey =='A') {
-    Keyboard.press(KEY_DOWN_ARROW);
-    delay(100);
-    Keyboard.releaseAll();
-  }
-  if (customKey =='B') {
-    Keyboard.press(KEY_RIGHT_ARROW);
-    delay(100);
-    Keyboard.releaseAll();
-  }
-  if (customKey =='7') {
-    Keyboard.press(KEY_UP_ARROW);
-    delay(100);
-    Keyboard.releaseAll();
-  }
-  if (customKey =='0') {
+
+  if (customKey == '0') {
     gui->previousPage();
   }
-  if (customKey =='2') {
+  if (customKey == '2') {
     gui->nextPage();
   }
-  if (customKey =='1') {
+  if (customKey == '1') {
     gui->doit();
   }
-  if (customKey =='4') {
-    Keyboard.press(0x26|0x80);
-    delay(100);
+  if (customKey == '4') {
+    Keyboard.press(0x1d);
+    delay(10);
+    Keyboard.releaseAll();
+    Keyboard.press(0x1d);
+    delay(10);
     Keyboard.releaseAll();
   }
-  if (customKey =='3') {
+  if (customKey == '3') {
     Keyboard.press(KEY_HOME);
     delay(100);
     Keyboard.releaseAll();
   }
-  if (customKey =='5') {
+  if (customKey == '5') {
     Keyboard.press(KEY_END);
     delay(100);
     Keyboard.releaseAll();
   }
+
+  KeyState state = customKeypad.getState();
+  if (state == HOLD) {
+    if (holdedChar == '9') {
+      Keyboard.press(KEY_LEFT_ARROW);
+      delay(10);
+      Keyboard.releaseAll();
+    }
+    if (holdedChar == 'A') {
+      Keyboard.press(KEY_DOWN_ARROW);
+      delay(10);
+      Keyboard.releaseAll();
+    }
+    if (holdedChar == 'B') {
+      Keyboard.press(KEY_RIGHT_ARROW);
+      delay(10);
+      Keyboard.releaseAll();
+    }
+    if (holdedChar == '7') {
+      Keyboard.press(KEY_UP_ARROW);
+      delay(10);
+      Keyboard.releaseAll();
+    }
+  }
 }
 
 // Taking care of some special events.
-void keypadEvent(KeypadEvent key){
-    switch (customKeypad.getState()){
+void keypadEvent(KeypadEvent key) {
+  switch (customKeypad.getState()) {
     case PRESSED:
-        if (key == '#') {
-            digitalWrite(ledPin,!digitalRead(ledPin));
-            ledPin_state = digitalRead(ledPin);        // Remember LED state, lit or unlit.
-        }
-        break;
+      // if ((key == KEY_LEFT_ARROW) || (key == KEY_RIGHT_ARROW) || (key == KEY_UP_ARROW) || (key == KEY_DOWN_ARROW) ) {
+      //   //digitalWrite(ledPin, !digitalRead(ledPin));
+      //   //ledPin_state = digitalRead(ledPin);  // Remember LED state, lit or unlit.
+      //   Keyboard.write('a');
+      // }
+      if (key == '9') {
+        Keyboard.press(KEY_LEFT_ARROW);
+        delay(100);
+        Keyboard.releaseAll();
+      }
+      if (key == 'A') {
+        Keyboard.press(KEY_DOWN_ARROW);
+        delay(100);
+        Keyboard.releaseAll();
+      }
+      if (key == 'B') {
+        Keyboard.press(KEY_RIGHT_ARROW);
+        delay(100);
+        Keyboard.releaseAll();
+      }
+      if (key == '7') {
+        Keyboard.press(KEY_UP_ARROW);
+        delay(100);
+        Keyboard.releaseAll();
+      }
+      break;
 
     case RELEASED:
-        if (key == '*') {
-            digitalWrite(ledPin,ledPin_state);    // Restore LED state from before it started blinking.
-            blink = false;
-        }
-        break;
+      // if (key == '*') {
+      //   //digitalWrite(ledPin, ledPin_state);  // Restore LED state from before it started blinking.
+      //   //blink = false;
+      // }
+
+      break;
 
     case HOLD:
-        if (key == '*') {
-            blink = true;    // Blink the LED when holding the * key.
-        }
-        break;
-    }
+      // if ((key == KEY_LEFT_ARROW) || (key == KEY_RIGHT_ARROW) || (key == KEY_UP_ARROW) || (key == KEY_DOWN_ARROW)) {
+      //   Keyboard.write('b');
+      // }
+      // Keyboard.write('d');
+      holdedChar = key;
+      break;
+  }
 }
